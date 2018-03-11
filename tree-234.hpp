@@ -29,6 +29,11 @@ public:
     iterator end() const;   ///< An invalid / "past-the-end" iterator
 
 private:
+    // Helper functions for the public methods.
+    size_t size(Node* node) const;
+    void extendAtRoot;
+    int height(Node* node) const;
+
     struct Node
     {
         T* keys_;
