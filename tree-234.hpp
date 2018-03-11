@@ -33,9 +33,8 @@ private:
     {
         T* keys_;
         size_t numKeys_;
-        Node** children_;
+        Node* children_[4];
         bool hasChildren_;
-        size_t size_;
         ~Node();
     };
     Node* root_;
