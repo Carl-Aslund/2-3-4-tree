@@ -54,7 +54,18 @@ size_t Tree234Set::size(Node* node) const
 */
 void Tree234Set::insert(const T& key)
 {
-    if (root_->numKeys_ == 3)
+    if (root_ == nullptr)
+    {
+        root_ = new Node{key, nullptr, nullptr};
+        root_->hasChildren_ = false;
+        return;
+    }
+    else if (exists(key))
+    {
+        cerr << "ERROR: Duplicate insertion." << endl;
+        return;
+    }
+    else if (root_->numKeys_ == 3)
     {
         extendAtRoot();
     }
@@ -91,7 +102,52 @@ void Tree234Set::extendAtRoot()
 */
 void Tree234Set::insert(const T& key, Node* node)
 {
-    //TODO: Write insert function
+    if (node == nullptr)
+    {
+        cerr << "ERROR: Insertion into nonexistent node." << endl;
+        return;
+    }
+    // The node being pointed to should not be a 4-node, and the key is new
+    size_t index = keyIndex(key, node);
+    if (node->hasChildren_)
+    {
+        if (node->children_[index]->numKeys_ == 3)
+        {
+            // Promotion needed
+            Node* promotee = node->children_[index];
+            T promoterKey = promotee->keys_[1];
+            Node* newRight = new Node{promotee->keys_[2],
+                promotee->children_[2], promotee->children_[3]}
+            promotee->children_[2] = nullptr;
+            promotee->children_[3] = nullptr;
+            promotee->numKeys_ = 1;
+            // Make space in the parent node for the promoted key
+            for (size_t i = node->numKeys_; i>index; --i)
+            {
+                node->keys_[i] = node->keys_[i-1];
+                node->children_[i+1] = node->children_[i];
+            }
+            node->keys_[index] = promoterKey;
+            node->children_[index+1] = newRight;
+            ++(node->numKeys_);
+            index = keyIndex(key, node);
+            insert(key, node->children_[index]);
+        }
+        else
+        {
+            insert(key, node->children_[index]);
+        }
+    }
+    else
+    {
+        // Move over pre-existing keys to make space for the new key
+        for (size_t i = node->numKeys_; i>index; --i)
+        {
+            node->keys_[i] = node->keys_[i-1];
+        }
+        node->keys_[index] = key;
+        ++(node->numKeys_);
+    }
 }
 
 /**
