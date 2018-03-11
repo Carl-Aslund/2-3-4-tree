@@ -32,14 +32,18 @@ private:
     // Helper functions for the public methods.
     size_t size(Node* node) const;
     void extendAtRoot;
+    void insert(const T& key, Node* node);
+    size_t keyIndex(const T& key, Node* node);
+    bool exists(const T& key, Node* node) const;
     int height(Node* node) const;
 
     struct Node
     {
-        T* keys_;
+        T keys_[3];
         size_t numKeys_;
         Node* children_[4];
         bool hasChildren_;
+        Node(const T& key, Node* leftChild, Node* rightChild);
         ~Node();
     };
     Node* root_;

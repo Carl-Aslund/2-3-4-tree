@@ -47,9 +47,18 @@ size_t Tree234Set::size(Node* node) const
     return numElements;
 }
 
+/**
+    Inserts an element into the tree.
+
+    @param key the element to be inserted
+*/
 void Tree234Set::insert(const T& key)
 {
-    //TODO: Write insert function
+    if (root_->numKeys_ == 3)
+    {
+        extendAtRoot();
+    }
+    insert(key, root_);
 }
 
 /**
@@ -64,13 +73,84 @@ void Tree234Set::extendAtRoot()
     }
     else
     {
-
+        Node* newRight = new Node{root_->keys_[2], root_->children_[2],
+            root_->children_[3]};
+        Node* newRoot = new Node{root_->keys_[1], root_, newRight};
+        root_->numKeys_ = 1;
+        root_->children[2] = nullptr;
+        root_->children[3] = nullptr;
+        root_ = newRoot;
     }
 }
 
+/**
+    Inserts an element into a tree or subtree defined by a node pointer.
+
+    @param key the element to be inserted
+    @param node a pointer to the root of a subtree
+*/
+void Tree234Set::insert(const T& key, Node* node)
+{
+    //TODO: Write insert function
+}
+
+/**
+    Determines before what element index a particular key fits into in a tree.
+
+    @param key the element key in question
+    @param node a pointer to the node in question (must not be nullptr)
+    @return a size_t referring to the appropriate index for the
+*/
+size_t Tree234Set::keyIndex(const T& key, Node* node)
+{
+    if (node == nullptr)
+    {
+        cerr << "ERROR: Null target node in indexing." << endl;
+        return -1;
+    }
+    for (int i=0; i<node->numKeys_; ++i)
+    {
+        if (key <= node->keys_[i])
+        {
+            return i;
+        }
+    }
+    return node->numKeys_; // If the key is the greatest, it goes at the end.
+}
+
+/**
+    Determines if a particular key can be found in the tree.
+
+    @param key the element key in question
+    @return true or false, whether the key is in the tree
+*/
 bool Tree234Set::exists(const T& key) const
 {
-    //TODO: Write exists function
+    return exists(key, root_);
+}
+
+/**
+    Determines if a particular key can be found in the tree defined by a root.
+
+    @param key the element key in question
+    @param node a pointer to the root of the tree or subtree
+    @return true or false, whether the key is in the tree
+*/
+bool Tree234Set::exists(const T& key, Node* node) const
+{
+    if (node == nullptr)
+    {
+        return false;
+    }
+    size_t index = keyIndex(key, node);
+    if (node->keys_[index] == key)
+    {
+        return true;
+    }
+    else
+    {
+        return exists(key, node->children_[index]);
+    }
 }
 
 /**
@@ -131,11 +211,25 @@ Tree234Set::iterator Tree234Set::end() const
 }
 
 /**
+    Parameterized constructor for a 2-Node.
+
+    @param key the only value initially stored in the node
+    @param leftChild a node pointer to the first child of the node
+    @param rightChild a node pointer to the second child of the node
+*/
+Tree234Set::Node::Node(const T& key, Node* leftChild, Node* rightChild)
+                 : numKeys_{1}, hasChildren_{true}
+{
+    keys_[0] = key;
+    children_[0] = leftChild;
+    children_[1] = rightChild;
+}
+
+/**
     Default destructor for a Node.
 */
 Tree234Set::Node::~Node()
 {
-    delete[] keys_;
     if (hasChildren_)
     {
         for (size_t i = 0; i<numKeys_+1; ++i)
