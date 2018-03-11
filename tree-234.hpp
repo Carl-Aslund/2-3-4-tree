@@ -6,7 +6,6 @@
 
 using namespace std;
 
-template<type T>
 class Tree234Set
 {
 private:
@@ -17,8 +16,8 @@ public:
     ~Tree234Set();
 
     size_t size() const;
-    void insert(const T& key);
-    bool exists(const T& key) const;
+    void insert(const string& key);
+    bool exists(const string& key) const;
     int height() const;
 
     void showStatistics(ostream& out) const;
@@ -29,31 +28,31 @@ public:
     iterator end() const;   ///< An invalid / "past-the-end" iterator
 
 private:
-    // Helper functions for the public methods.
-    size_t size(Node* node) const;
-    void extendAtRoot;
-    void insert(const T& key, Node* node);
-    size_t keyIndex(const T& key, Node* node);
-    bool exists(const T& key, Node* node) const;
-    int height(Node* node) const;
-
     struct Node
     {
-        T keys_[3];
+        string keys_[3];
         size_t numKeys_;
         Node* children_[4];
         bool hasChildren_;
-        Node(const T& key, Node* leftChild, Node* rightChild);
+        Node(const string& key, Node* leftChild, Node* rightChild);
         ~Node();
     };
     Node* root_;
+
+    // Helper functions for the public methods.
+    size_t size(Node* node) const;
+    void extendAtRoot();
+    void insert(const string& key, Node* node);
+    size_t keyIndex(const string& key, Node* node) const;
+    bool exists(const string& key, Node* node) const;
+    int height(Node* node) const;
 
     class Iterator
     {
     public:
         // Definitions that are required for this class to be a well-behaved
         // STL-style iterator that moves forward through a collection of strings.
-        using value_type        = T;
+        using value_type        = string;
         using reference         = value_type&;
         using pointer           = value_type*;
         using difference_type   = ptrdiff_t;
@@ -67,13 +66,13 @@ private:
 
         // Custom-defined, standard-use iterator operations
         Iterator& operator++();
-        T& operator*() const;
+        string& operator*() const;
         bool operator==(const Iterator& rhs) const;
         bool operator!=(const Iterator& rhs) const;
 
     private:
         friend class Tree234Set;
-        Iterator(Node* current, queue<Node*> queue);
+        Iterator(Node* current, queue<Node*> queue, size_t i);
         Node* current_;
         queue<Node*> queue_;
         size_t index_;

@@ -1,6 +1,7 @@
 #include "tree-234.hpp"
 
 #include <queue>
+#include <iostream>
 
 using namespace std; // TODO: Write header comments for all the functions
 
@@ -36,7 +37,7 @@ size_t Tree234Set::size() const
 */
 size_t Tree234Set::size(Node* node) const
 {
-    size_t numElements = numKeys_;
+    size_t numElements = node->numKeys_;
     if (node->hasChildren_)
     {
         for (size_t i = 0; i<(node->numKeys_+1); ++i)
@@ -52,7 +53,7 @@ size_t Tree234Set::size(Node* node) const
 
     @param key the element to be inserted
 */
-void Tree234Set::insert(const T& key)
+void Tree234Set::insert(const string& key)
 {
     if (root_ == nullptr)
     {
@@ -88,8 +89,8 @@ void Tree234Set::extendAtRoot()
             root_->children_[3]};
         Node* newRoot = new Node{root_->keys_[1], root_, newRight};
         root_->numKeys_ = 1;
-        root_->children[2] = nullptr;
-        root_->children[3] = nullptr;
+        root_->children_[2] = nullptr;
+        root_->children_[3] = nullptr;
         root_ = newRoot;
     }
 }
@@ -100,7 +101,7 @@ void Tree234Set::extendAtRoot()
     @param key the element to be inserted
     @param node a pointer to the root of a subtree
 */
-void Tree234Set::insert(const T& key, Node* node)
+void Tree234Set::insert(const string& key, Node* node)
 {
     if (node == nullptr)
     {
@@ -115,9 +116,9 @@ void Tree234Set::insert(const T& key, Node* node)
         {
             // Promotion needed
             Node* promotee = node->children_[index];
-            T promoterKey = promotee->keys_[1];
+            string promoterKey = promotee->keys_[1];
             Node* newRight = new Node{promotee->keys_[2],
-                promotee->children_[2], promotee->children_[3]}
+                promotee->children_[2], promotee->children_[3]};
             promotee->children_[2] = nullptr;
             promotee->children_[3] = nullptr;
             promotee->numKeys_ = 1;
@@ -153,7 +154,7 @@ void Tree234Set::insert(const T& key, Node* node)
     @param node a pointer to the node in question (must not be nullptr)
     @return a size_t referring to the appropriate index for the
 */
-size_t Tree234Set::keyIndex(const T& key, Node* node)
+size_t Tree234Set::keyIndex(const string& key, Node* node) const
 {
     if (node == nullptr)
     {
@@ -176,7 +177,7 @@ size_t Tree234Set::keyIndex(const T& key, Node* node)
     @param key the element key in question
     @return true or false, whether the key is in the tree
 */
-bool Tree234Set::exists(const T& key) const
+bool Tree234Set::exists(const string& key) const
 {
     return exists(key, root_);
 }
@@ -188,7 +189,7 @@ bool Tree234Set::exists(const T& key) const
     @param node a pointer to the root of the tree or subtree
     @return true or false, whether the key is in the tree
 */
-bool Tree234Set::exists(const T& key, Node* node) const
+bool Tree234Set::exists(const string& key, Node* node) const
 {
     if (node == nullptr)
     {
@@ -230,12 +231,16 @@ int Tree234Set::height(Node* node) const
     }
     else if (node->hasChildren_)
     {
-        int childSizes[4] = {-1,-1,-1,-1};
+        int maxSize = -1;
         for (size_t i = 0; i<(node->numKeys_+1); ++i)
         {
-            childSizes[i] = size(node->children_[i]);
+            int childSize = size(node->children_[i]);
+            if (childSize > maxSize)
+            {
+                maxSize = childSize;
+            }
         }
-        return 1 + max(childSizes);
+        return 1 + maxSize;
     }
     else
     {
@@ -267,7 +272,7 @@ Tree234Set::iterator Tree234Set::begin() const
     else
     {
         queue<Node*> newQueue;
-        index_ = 0;
+        size_t index = 0;
         if (root_->hasChildren_)
         {
             for (size_t i=0; i<=root_->numKeys_; ++i)
@@ -275,8 +280,8 @@ Tree234Set::iterator Tree234Set::begin() const
                 newQueue.push(root_->children_[i]);
             }
         }
+        return Iterator{root_, newQueue, index};
     }
-    return Iterator{root_, newQueue};
 }
 
 /**
@@ -296,7 +301,7 @@ Tree234Set::iterator Tree234Set::end() const
     @param leftChild a node pointer to the first child of the node
     @param rightChild a node pointer to the second child of the node
 */
-Tree234Set::Node::Node(const T& key, Node* leftChild, Node* rightChild)
+Tree234Set::Node::Node(const string& key, Node* leftChild, Node* rightChild)
                  : numKeys_{1}, hasChildren_{true}
 {
     keys_[0] = key;
@@ -323,7 +328,7 @@ Tree234Set::Node::~Node()
 
     @return a reference to the incremented iterator.
 */
-TreeStringSet::Iterator& TreeStringSet::Iterator::operator++()
+Tree234Set::Iterator& Tree234Set::Iterator::operator++()
 {
     if (queue_.empty())
     {
@@ -342,11 +347,12 @@ TreeStringSet::Iterator& TreeStringSet::Iterator::operator++()
         {
             for (size_t i=0; i<=next->numKeys_; ++i)
             {
-                newQueue.push(next->children_[i]);
+                queue_.push(next->children_[i]);
             }
         }
         current_ = next;
     }
+    return *this;
 }
 
 /**
@@ -354,7 +360,7 @@ TreeStringSet::Iterator& TreeStringSet::Iterator::operator++()
 
     @return a reference to the current value of the iterator
 */
-T& TreeStringSet::Iterator::operator*() const
+string& Tree234Set::Iterator::operator*() const
 {
     return current_->keys_[index_];
 }
@@ -365,16 +371,23 @@ T& TreeStringSet::Iterator::operator*() const
     @param rhs a reference to another iterator from the same tree
     @return true or false, whether the iterators are equal
 */
-bool TreeStringSet::Iterator::operator==(const Iterator& rhs) const
+bool Tree234Set::Iterator::operator==(const Iterator& rhs) const
 {
     return (current_ == rhs.current_) && (queue_ == rhs.queue_)
         && (index_ == rhs.index_);
 }
 
-bool TreeStringSet::Iterator::operator!=(const Iterator& rhs) const
+bool Tree234Set::Iterator::operator!=(const Iterator& rhs) const
 {
     return !(*this == rhs);
 }
 
-TreeStringSet::Iterator::Iterator(Node* current, queue<Node*> queue)
-                        : current_{current}, queue_{queue} { }
+/**
+    Default constructor for a tree Iterator.
+
+    @param current the input value for the node pointer
+    @param queue the input queue
+    @param i the initial index of the iterator
+*/
+Tree234Set::Iterator::Iterator(Node* current, queue<Node*> queue, size_t i)
+                        : current_{current}, queue_{queue}, index_{i} { }
