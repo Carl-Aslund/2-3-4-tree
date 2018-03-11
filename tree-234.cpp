@@ -131,12 +131,8 @@ void Tree234Set::insert(const T& key, Node* node)
             node->children_[index+1] = newRight;
             ++(node->numKeys_);
             index = keyIndex(key, node);
-            insert(key, node->children_[index]);
         }
-        else
-        {
-            insert(key, node->children_[index]);
-        }
+        insert(key, node->children_[index]);
     }
     else
     {
@@ -257,13 +253,40 @@ ostream& Tree234Set::print(ostream& out) const
     //TODO: Write function to print the whole tree
 }
 
+/**
+    Creates an iterator pointing to the root of the tree.
+
+    @return an iterator pointing to the beginning of the tree
+*/
 Tree234Set::iterator Tree234Set::begin() const
 {
-    //TODO: Write function to obtain an iterator pointing to the first node
+    if (root_ == nullptr)
+    {
+        return end();
+    }
+    else
+    {
+        queue<Node*> newQueue;
+        index_ = 0;
+        if (root_->hasChildren_)
+        {
+            for (size_t i=0; i<=root_->numKeys_; ++i)
+            {
+                newQueue.push(root_->children_[i]);
+            }
+        }
+    }
+    return Iterator{root_, newQueue};
 }
+
+/**
+    Creates an iterator pointing to nothing.
+
+    @return an iterator pointing to the end of the tree.
+*/
 Tree234Set::iterator Tree234Set::end() const
 {
-    //TODO: Write function to obtain an iterator to the end of the tree
+    return Iterator{};
 }
 
 /**
@@ -295,19 +318,57 @@ Tree234Set::Node::~Node()
     }
 }
 
+/**
+    Incrementing operator for a tree iterator.
+
+    @return a reference to the incremented iterator.
+*/
 TreeStringSet::Iterator& TreeStringSet::Iterator::operator++()
 {
-    //TODO: Write iterator incrementer
+    if (queue_.empty())
+    {
+        current_ = nullptr;
+    }
+    else if (index_ < current_->numKeys_-1)
+    {
+        ++index_;
+    }
+    else
+    {
+        index_ = 0;
+        Node* next = queue_.front();
+        queue_.pop();
+        if (next->hasChildren_)
+        {
+            for (size_t i=0; i<=next->numKeys_; ++i)
+            {
+                newQueue.push(next->children_[i]);
+            }
+        }
+        current_ = next;
+    }
 }
 
+/**
+    Dereferencing operator for a tree iterator.
+
+    @return a reference to the current value of the iterator
+*/
 T& TreeStringSet::Iterator::operator*() const
 {
-    //TODO: Write iterator dereferencing operator
+    return current_->keys_[index_];
 }
 
+/**
+    Equality operator for tree iterators.
+
+    @param rhs a reference to another iterator from the same tree
+    @return true or false, whether the iterators are equal
+*/
 bool TreeStringSet::Iterator::operator==(const Iterator& rhs) const
 {
-    //TODO: Write equality operator
+    return (current_ == rhs.current_) && (queue_ == rhs.queue_)
+        && (index_ == rhs.index_);
 }
 
 bool TreeStringSet::Iterator::operator!=(const Iterator& rhs) const

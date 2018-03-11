@@ -76,6 +76,7 @@ private:
         Iterator(Node* current, queue<Node*> queue);
         Node* current_;
         queue<Node*> queue_;
+        size_t index_;
     };
 };
 
