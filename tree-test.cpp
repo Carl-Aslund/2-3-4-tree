@@ -48,7 +48,7 @@ int main()
     affirm(defaultConstructorTest());
     affirm(insertSizeTest());
     affirm(heightTest());
-    affirm(existsTest());
+    // affirm(existsTest());
 
   // Print a summary of the all the affirmations and exit the program.
     if (alltests.summarize(true)) {

@@ -161,7 +161,7 @@ size_t Tree234Set::keyIndex(const string& key, Node* node) const
         cerr << "ERROR: Null target node in indexing." << endl;
         return -1;
     }
-    for (int i=0; i<node->numKeys_; ++i)
+    for (size_t i=0; i<node->numKeys_; ++i)
     {
         if (key <= node->keys_[i])
         {
@@ -248,14 +248,52 @@ int Tree234Set::height(Node* node) const
     }
 }
 
+/**
+    Output some potentially useful statistics about the tree.
+
+    @param out the target output stream
+*/
 void Tree234Set::showStatistics(ostream& out) const
 {
-    //TODO: Write function to output statistics about the tree
+    // Format: s size, h height, a 2-nodes, b 3-nodes, c 4-nodes
+    out << "Statistics: ";
+    out << size() << " size, ";
+    out << height() << " height, ";
+    out << countNodes(1, root_) << " 2-nodes, ";
+    out << countNodes(2, root_) << " 3-nodes, ";
+    out << countNodes(3, root_) << " 4-nodes";
+    out << endl;
+}
+
+/**
+    Count how many nodes with a particular number of keys are in the tree.
+
+    @param numKeys the number of keys in targeted nodes
+    @param node a pointer to the root of the subtree
+    @return the number of nodes with the appropriate number of keys
+*/
+size_t Tree234Set::countNodes(size_t numKeys, Node* node) const
+{
+    size_t count = 0;
+    if (node == nullptr)
+    {
+        return count;
+    }
+    if (node->numKeys_ == numKeys)
+    {
+        ++count;
+    }
+    for (size_t i = 0; i<(node->numKeys_+1); ++i)
+    {
+        count += countNodes(numKeys, node->children_[i]);
+    }
+    return count;
 }
 
 ostream& Tree234Set::print(ostream& out) const
 {
     //TODO: Write function to print the whole tree
+    //Format:
 }
 
 /**
@@ -377,6 +415,12 @@ bool Tree234Set::Iterator::operator==(const Iterator& rhs) const
         && (index_ == rhs.index_);
 }
 
+/**
+    Inequality operator for tree iterators.
+
+    @param rhs a reference to another iterator from the same tree
+    @return true or false, whether the iterators are unequal
+*/
 bool Tree234Set::Iterator::operator!=(const Iterator& rhs) const
 {
     return !(*this == rhs);

@@ -46,6 +46,7 @@ private:
     size_t keyIndex(const string& key, Node* node) const;
     bool exists(const string& key, Node* node) const;
     int height(Node* node) const;
+    size_t countNodes(size_t numKeys, Node* node) const;
 
     class Iterator
     {
