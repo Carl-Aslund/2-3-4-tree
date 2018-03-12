@@ -214,6 +214,10 @@ bool Tree234Set::exists(const string& key, Node* node) const
     {
         return true;
     }
+    else if (node->hasChildren_ == false)
+    {
+        return false;
+    }
     else
     {
         return exists(key, node->children_[index]);

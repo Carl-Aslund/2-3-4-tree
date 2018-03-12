@@ -64,8 +64,8 @@ bool insertSizeTest()
 /** \brief Test height
  *  \detail Tests whether or not the height function is accurate.
  */
- bool heightTest()
- {
+bool heightTest()
+{
     TestingLogger log("height");
 
     Tree234Set myTree;
@@ -104,10 +104,72 @@ bool insertSizeTest()
     myTree.insert("pear");
     affirm(myTree.height() == 2);
 
-    // myTree.showStatistics(cout);
+    //Print a summary of the all the affirmations and return true
+    // if they were all successful.
+    return log.summarize();
+}
+
+/** \brief Test exists
+ *  \detail Tests the exists() function by filling a tree and finding elements
+ */
+bool existsTest()
+{
+    TestingLogger log("exists");
+
+    Tree234Set existTree;
+    affirm(!existTree.exists("hello"));
+
+    existTree.insert("hello");
+    existTree.insert("world");
+    affirm(existTree.exists("hello"));
+    existTree.insert("testing");
+    existTree.insert("abra");
+    existTree.insert("world");
+    // existTree.insert("kadabra");
+    // existTree.insert("black");  // Causes a segfault
+    // existTree.insert("panther");
+    // existTree.insert("apple");
+    // existTree.insert("banana");
+    // existTree.insert("pear");
+
+    existTree.print(cout);
     cout << endl;
 
-    //Print a summary of the all the affirmations and return true
+    affirm(existTree.exists("apple"));
+    affirm(existTree.exists("banana"));
+    affirm(existTree.exists("black"));
+    affirm(existTree.exists("panther"));
+    affirm(existTree.exists("world"));
+
+    // Print a summary of the all the affirmations and return true
+    // if they were all successful.
+    return log.summarize();
+}
+
+/** \brief Test begin and end iterators
+ *  \detail Tests the begin and end iterators for various functions
+ */
+bool beginEndTest()
+{
+    TestingLogger log("beginEnd");
+
+    Tree234Set myTree;
+
+    // Print a summary of the all the affirmations and return true
+    // if they were all successful.
+    return log.summarize();
+}
+
+/** \brief Test iterator operators
+ *  \detail Tests the incrementing and dereferencing operators for iterators
+ */
+bool iteratorOperatorTest()
+{
+    TestingLogger log("iteratorOperator");
+
+    Tree234Set myTree;
+
+    // Print a summary of the all the affirmations and return true
     // if they were all successful.
     return log.summarize();
 }
@@ -120,8 +182,10 @@ int main()
     affirm(insertSizeTest());
     affirm(heightTest());
     // affirm(existsTest());
+    // affirm(beginEndTest());
+    // affirm(iteratorOperatorTest());
 
-  // Print a summary of the all the affirmations and exit the program.
+    // Print a summary of the all the affirmations and exit the program.
     if (alltests.summarize(true)) {
         return 0;       // Error code of 0 == Success!
     } else {
