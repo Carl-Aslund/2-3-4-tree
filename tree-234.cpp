@@ -3,7 +3,7 @@
 #include <queue>
 #include <iostream>
 
-using namespace std; // TODO: Write header comments for all the functions
+using namespace std;
 
 /**
     Default constructor for a 234-Tree.
@@ -290,10 +290,52 @@ size_t Tree234Set::countNodes(size_t numKeys, Node* node) const
     return count;
 }
 
+/**
+    Print out a representation of the tree.
+
+    @param out the target output stream
+    @return a reference to the target output stream
+*/
 ostream& Tree234Set::print(ostream& out) const
 {
-    //TODO: Write function to print the whole tree
-    //Format:
+    // Format: ([keys], child1, child2...)
+    return print(out, root_);
+}
+
+/**
+    Print out a representation of the tree given a root node.
+
+    @param out the target output stream
+    @param node the root node of the tree or subtree
+    @return a reference to the target output stream
+*/
+ostream& Tree234Set::print(ostream& out, Node* node) const
+{
+    // Format: ([keys], child1, child2...)
+    if (node == nullptr)
+    {
+        out << "()";
+        return out;
+    }
+    else
+    {
+        out << "(["
+        for (size_t i=0; i<(node->numKeys_-1); ++i) // Print all keys in node
+        {
+            out << node->keys_[i] << ", ";
+        }
+        out << node->keys_[(node->numKeys_)-1] << "]";
+        if (node->hasChildren_) // Print out children
+        {
+            for(size_t i=0; i<(node->numKeys_+1); ++i)
+            {
+                out << ", ";
+                print(out, node->children_[i]);
+            }
+        }
+        out << ")";
+        return out;
+    }
 }
 
 /**
