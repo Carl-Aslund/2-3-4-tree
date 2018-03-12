@@ -37,6 +37,10 @@ size_t Tree234Set::size() const
 */
 size_t Tree234Set::size(Node* node) const
 {
+    if (node == nullptr)
+    {
+        return 0;
+    }
     size_t numElements = node->numKeys_;
     if (node->hasChildren_)
     {
@@ -87,6 +91,11 @@ void Tree234Set::extendAtRoot()
     {
         Node* newRight = new Node{root_->keys_[2], root_->children_[2],
             root_->children_[3]};
+        if ((newRight->children_[0] == nullptr) &&
+            (newRight->children_[1] == nullptr))
+        {
+            newRight->hasChildren_ = false;
+        }
         Node* newRoot = new Node{root_->keys_[1], root_, newRight};
         root_->numKeys_ = 1;
         root_->children_[2] = nullptr;
@@ -119,6 +128,11 @@ void Tree234Set::insert(const string& key, Node* node)
             string promoterKey = promotee->keys_[1];
             Node* newRight = new Node{promotee->keys_[2],
                 promotee->children_[2], promotee->children_[3]};
+            if ((newRight->children_[0] == nullptr) &&
+                (newRight->children_[1] == nullptr))
+            {
+                newRight->hasChildren_ = false;
+            }
             promotee->children_[2] = nullptr;
             promotee->children_[3] = nullptr;
             promotee->numKeys_ = 1;
@@ -234,7 +248,7 @@ int Tree234Set::height(Node* node) const
         int maxSize = -1;
         for (size_t i = 0; i<(node->numKeys_+1); ++i)
         {
-            int childSize = size(node->children_[i]);
+            int childSize = height(node->children_[i]);
             if (childSize > maxSize)
             {
                 maxSize = childSize;
@@ -319,7 +333,7 @@ ostream& Tree234Set::print(ostream& out, Node* node) const
     }
     else
     {
-        out << "(["
+        out << "([";
         for (size_t i=0; i<(node->numKeys_-1); ++i) // Print all keys in node
         {
             out << node->keys_[i] << ", ";
