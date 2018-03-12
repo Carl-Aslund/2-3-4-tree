@@ -291,15 +291,17 @@ size_t Tree234Set::countNodes(size_t numKeys, Node* node) const
     size_t count = 0;
     if (node == nullptr)
     {
-        return count;
+        return 0;
     }
-    if (node->numKeys_ == numKeys)
+    if ((node->numKeys_) == numKeys)
     {
         ++count;
     }
-    for (size_t i = 0; i<(node->numKeys_+1); ++i)
-    {
-        count += countNodes(numKeys, node->children_[i]);
+    if (node->hasChildren_){
+        for (size_t i = 0; i<((node->numKeys_)+1); ++i)
+        {
+            count += countNodes(numKeys, node->children_[i]);
+        }
     }
     return count;
 }
